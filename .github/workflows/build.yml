@@ -30,9 +30,25 @@ jobs:
           echo "Project extracted successfully"
           ls -la
 
-      - name: Build APK
-        working-directory: buildsrc
-        run: gradle --no-daemon assembleDebug
+      - name: Fix Kotlin stdlib duplicate classes
+  working-directory: buildsrc
+  run: |
+    cat > kotlin-fix.init.gradle <<'EOF'
+    allprojects {
+        configurations.configureEach {
+            resolutionStrategy.eachDependency { details ->
+                if (details.requested.group == 'org.jetbrains.kotlin' && details.requested.name == 'kotlin-stdlib-jdk8') {
+                    details.useVersion('1.8.22')
+                    details.because('Align Kotlin JDK8 stdlib with Kotlin stdlib 1.8.22')
+                }
+            }
+        }
+    }
+    EOF
+
+- name: Build APK
+  working-directory: buildsrc
+  run: gradle --no-daemon --init-script kotlin-fix.init.gradle assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
