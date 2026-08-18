@@ -26,16 +26,16 @@ jobs:
         run: |
           mkdir buildsrc
           unzip -q MDS-Hitung-Dzikir-v1.0-build-cloud.zip -d buildsrc
-          cd buildsrc/MDS-Hitung-Dzikir-build
+          cd buildsrc
           echo "Project extracted successfully"
           ls -la
 
       - name: Build APK
-        working-directory: buildsrc/MDS-Hitung-Dzikir-build
+        working-directory: buildsrc
         run: gradle --no-daemon assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: MDS-Hitung-Dzikir-debug
-          path: buildsrc/MDS-Hitung-Dzikir-build/app/build/outputs/apk/debug/app-debug.apk
+          path: buildsrc/app/build/outputs/apk/debug/app-debug.apk
